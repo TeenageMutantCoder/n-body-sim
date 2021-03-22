@@ -1,13 +1,135 @@
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+:root {
+  --main-color: #a947ff;
+  --accent-color: #4824ff;
+  --navigation-width: 20rem;
+  --navigation-animation-time: 0.5s;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: black;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+main {
+  min-height: 100%;
+  margin: 0 3.7rem;
+}
+
+h1, h2, h3, a, p {
+  color: white;
+}
+
+h1, h2, h3 {
+  text-align: center;
+}
+
+input#menu-toggle {
+  display: none;
+}
+
+input#menu-toggle:checked ~ .hamburger span {
+  transform: translateX(0.2rem);
+}
+
+input#menu-toggle:checked ~ .hamburger span:nth-child(2) {
+  opacity: 0;
+}
+
+input#menu-toggle:checked ~ .hamburger span:nth-child(1) {
+  /* transform-origin: 10% -7%; */
+  transform: translateY(0.7rem) rotate(45deg);
+}
+
+input#menu-toggle:checked ~ .hamburger span:last-child {
+  /* transform-origin: 0% 100%; */
+  transform: translateY(-0.7rem) rotate(-45deg);
+}
+
+input#menu-toggle:checked ~ .navigation {
+  transform: translateX(0vw);
+}
+
+.hamburger {
+  cursor: pointer;
+  display: block;
+  padding: 0.2rem;
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  z-index: 1000;
+}
+
+.hamburger span {
+  background-color: white;
+  border-radius: 1rem;
+  display: block;
+  height: 0.3rem;
+  margin: 0.4rem 0;
+  transform: rotate(0);
+  transition: transform var(--navigation-animation-time) ease-in-out, opacity var(--navigation-animation-time);
+  width: 2.5rem;
+}
+
+.navigation {
+  align-items: center;
+  background: linear-gradient(45deg, var(--main-color), var(--accent-color));
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  justify-content: space-around;
+  left: 0;
+  opacity: 90%;
+  position: absolute;
+  top: 0;
+  transform: translateX(calc(-1 * var(--navigation-width)));
+  transition: transform var(--navigation-animation-time) ease-in-out;
+  width: var(--navigation-width);
+}
+
+.navigation__item {
+  list-style: none;
+  margin: 10vh 0;
+  padding: 0.5rem 0;
+  text-align: center;
+}
+
+.navigation__item a {
+  font-size: 2.5rem;
+  padding: 1rem;
+  text-decoration: none;
+  text-shadow: 2px 2px black;
+}
+
+.navigation__item a:hover {
+  text-decoration: underline;
+}
+
+.title {
+  text-align: center;
+  margin: 1rem 0;
+}
+
+.Simulation {
+  display: flex;
+  flex-direction: column;
+}
+
+.Simulation .planets{
+  display: flex;
+  overflow-x: auto;
+}
+
+.Simulation #glCanvas{
+  flex: 1;
+}
+
+.Planet {
+  margin: 1rem;
 }
