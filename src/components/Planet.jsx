@@ -1,5 +1,7 @@
-function Planet(props) {
-    return(
+import React from "react";
+
+const Planet = (props) => {
+    return (
         <div className="Planet">
             <p>Name: {props.name}</p>
             <p>Mass: {props.mass}</p>
