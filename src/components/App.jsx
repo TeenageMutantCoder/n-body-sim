@@ -1,24 +1,30 @@
 import React from "react";
 import { BrowserRouter, Link, Switch, Route } from "react-router-dom";
-import Simulation from "./Simulation";
 import About from "./About";
 import ContactMe from "./ContactMe";
+import Home from "./Home";
+import Simulation from "./Simulation";
 
 const routes = [
     {
         path: "/simulation",
         title: "Simulation",
-        main: () => <Simulation />
+        content: () => <Simulation />
     },
     {
         path: "/about",
         title: "About",
-        main: () => <About />
+        content: () => <About />
     },
     {
         path: "/contact-me",
         title: "Contact Me",
-        main: () => <ContactMe />
+        content: () => <ContactMe />
+    },
+    {
+        path: "/",
+        title: "Home",
+        content: () => <Home />
     }
 ];
 
@@ -33,28 +39,31 @@ const App = () => {
             </label>
             <nav className="navigation">
                 <ul>
-                    {routes.map((route, index) => (
-                        <>
-                        <li key={route.title} className="navigation__item">
-                            <Link to={route.path}>{route.title}</Link>
-                        </li>
-                        {index < routes.length - 1 ? <hr /> : <></> }
-                        </>
-                    ))}
+                    <li className="navigation__item">
+                        <Link to="/">Home</Link>
+                    </li>
+                    <hr />
+                    <li className="navigation__item">
+                        <Link to="/simulation">Simulation</Link>
+                    </li>
+                    <hr />
+                    <li className="navigation__item">
+                        <Link to="/about">About</Link>
+                    </li>
                 </ul>
             </nav>
             <main>
                 <Switch>
                     {routes.map(route => (
                         <Route key={route.title} path={route.path}>
-                            {route.main}
+                            {route.content}
                         </Route>
                     ))}
                 </Switch>
             </main>
         </BrowserRouter>
     );
-}
+};
 
 
 export default App;

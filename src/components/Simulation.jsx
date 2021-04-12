@@ -2,47 +2,133 @@
 import React, { useState, useEffect, useRef } from "react";
 import Planet from "./Planet";
 
-const defaultPlanets = [
-        {name: "Sun", mass: 0, radius: 0, x: 0, y: 0},
-        {name: "Mercury", mass: 0, radius: 0, x: 0, y: 0},
-        {name: "Venus", mass: 0, radius: 0, x: 0, y: 0},
-        {name: "Earth", mass: 0, radius: 0, x: 0, y: 0},
-        {name: "Mars", mass: 0, radius: 0, x: 0, y: 0},
-        {name: "Jupiter", mass: 0, radius: 0, x: 0, y: 0},
-        {name: "Saturn", mass: 0, radius: 0, x: 0, y: 0},
-        {name: "Uranus", mass: 0, radius: 0, x: 0, y: 0},
-        {name: "Neptune", mass: 0, radius: 0, x: 0, y: 0},
-    ];
-
 const Simulation = (props) => {
-    const [planets, setPlanets] = useState(defaultPlanets);
+    // Units are all in standard SI units (kg, m)
+    // Mass and radius taken from https://solarsystem.nasa.gov/solar-system/sun/by-the-numbers/ and https://ssd.jpl.nasa.gov/?planet_phys_par
+    // Equatorial radius data used for radius
+    // Initial x values represent distance from sun. Taken from https://www.jpl.nasa.gov/edu/pdfs/scaless_reference.pdf
+    const defaults = {
+        zoomScale: 1/1000,
+        shouldInvertCamera: false,
+        cameraSpeed: 100,
+        zoomScaleStep: 1.1,
+        cameraSpeedStep: 100,
+        planets: [
+            {name: "Sun", color: null, mass: 19891 * 10**26, radius: 695508, x: 0, y: 0},
+            {name: "Mercury", color: null, mass: 330114 * 10**18, radius: 2440.53, x: 57900000, y: 0},
+            {name: "Venus", color: null, mass: 486747 * 10**19, radius: 6051.8, x: 108200000, y: 0},
+            {name: "Earth", color: null, mass: 597237 * 10**19, radius: 6378.1366, x: 149600000, y: 0},
+            {name: "Mars", color: null, mass: 641712 * 10**18, radius: 3396.19, x: 227900000, y: 0},
+            {name: "Jupiter", color: null, mass: 1898187 * 10**21, radius: 71492, x: 778600000, y: 0},
+            {name: "Saturn", color: null, mass: 5683174 * 10**20, radius: 60268, x: 1433500000, y: 0},
+            {name: "Uranus", color: null, mass: 868127 * 10**20, radius: 25559, x: 2872500000, y: 0},
+            {name: "Neptune", color: null, mass: 1024126 * 10**20, radius: 24764, x: 4495100000, y: 0}
+        ]
+    };
+    let zoomScale = defaults.zoomScale;
+    let xOffset = 0;
+    let yOffset = 0;
+    let cameraSpeed = defaults.cameraSpeed;
+    let shouldInvertCamera = defaults.shouldInvertCamera;
+
+    const [planets, setPlanets] = useState(defaults.planets);
     const canvasRef = useRef(null);
 
-    const createPlanet = (name, radius, mass, x, y) => {
-        setPlanets([...planets, {name: name, radius: radius, mass: mass, x: x, y: y}]);
-    };
-    
-    const draw = (ctx, frameCount) => {
-        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-        ctx.fillStyle = '#FFFFFF';
-        ctx.beginPath();
-        ctx.arc(ctx.canvas.width/2, ctx.canvas.height/2, 20*Math.sin(frameCount*0.05)**2, 0, 2*Math.PI);
-        ctx.fill();
+    const createPlanet = (name, color, radius, mass, x, y) => {
+        setPlanets([...planets, {name: name, color: color, radius: radius, mass: mass, x: x, y: y}]);
     };
 
+    const updatePlanets = () => {};
+
+    const handleKeyDown = (event, speed, shouldInvert) => {
+        speed = shouldInvert ? speed : -speed;
+        switch (event.key.toLowerCase()) {
+            // Camera movement controls
+            case "arrowup":
+                yOffset += speed;
+                break;
+            case "arrowdown":
+                yOffset -= speed;
+                break;
+            case "arrowleft":
+                xOffset += speed;
+                break;
+            case "arrowright":
+                xOffset -= speed;
+                break;
+            // Reset
+            case "r":
+                xOffset = 0;
+                yOffset = 0;
+                cameraSpeed = defaults.cameraSpeed;
+                zoomScale = defaults.zoomScale;
+                shouldInvertCamera = defaults.shouldInvertCamera;
+                break;
+            // Zoom controls
+            case "w":
+                zoomScale *= defaults.zoomScaleStep;
+                break;
+            case "s":
+                zoomScale /= defaults.zoomScaleStep;
+                break;
+            // Camera speed controls
+            case "a":
+                if (cameraSpeed === defaults.cameraSpeedStep) break;
+                cameraSpeed -= defaults.cameraSpeedStep;
+                break;
+            case "d":
+                cameraSpeed += defaults.cameraSpeedStep;
+                break;
+            // Camera invert toggle
+            case "i":
+                shouldInvertCamera = !shouldInvertCamera;
+                break;
+            default:
+                return;
+        }
+    }
+
+    const draw = (ctx) => {
+        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+        // Draw each planet
+        planets.forEach(planet => {
+            ctx.fillStyle = planet.color ? planet.color : '#FFFFFF';
+            ctx.beginPath();
+            ctx.arc(Math.round(planet.x * zoomScale + ctx.canvas.width/2) - xOffset,
+                    Math.round(planet.y * zoomScale + ctx.canvas.height/2) - yOffset, 
+                    Math.round(planet.radius * zoomScale), 0, 2*Math.PI);
+            ctx.fill();
+        });
+        // Draw camera information text
+        ctx.fillStyle = "#FF0000";
+        ctx.font = "2rem sans-serif"
+        ctx.fillText("Camera speed: " + cameraSpeed, 5, 25);
+        ctx.fillText("Zoom scale: " + Number.parseFloat(zoomScale).toFixed(6), 5, 75);
+        ctx.fillText("Inverted camera: " + shouldInvertCamera, 5, 125);
+        ctx.fillText("Camera position: (" + xOffset + " " + yOffset + ")", 5, 175);
+    };
+    
     useEffect(() => {
+        document.addEventListener("keydown", event => {
+            event.preventDefault();
+            handleKeyDown(event, cameraSpeed, shouldInvertCamera);
+        });
+
         const canvas = canvasRef.current;
-        const context = canvas.getContext("2d");
-        let frameCount = 0;
+        const dpr = window.devicePixelRatio || 1;
+        const rect = canvas.getBoundingClientRect();
+        canvas.width = rect.width * dpr;
+        canvas.height = rect.height * dpr;
+
+        const context = canvas.getContext("2d")
+        context.scale(dpr, dpr);
         let animationFrameId;
 
         const render = () => {
-            frameCount++;
-            draw(context, frameCount);
+            draw(context, dpr);
             animationFrameId = window.requestAnimationFrame(render);
         };
         render();
-
         return () => {
             window.cancelAnimationFrame(animationFrameId)
         };
@@ -97,7 +183,7 @@ const Simulation = (props) => {
     //       };
     //     }
     //   }, [canvas]);
-    
+
     return (
         <div className="Simulation">
             <h1 className="title">Simulation</h1>
@@ -115,6 +201,6 @@ const Simulation = (props) => {
             <canvas ref={canvasRef}></canvas>
         </div>
     );
-}
+};
 
 export default Simulation;

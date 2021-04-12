@@ -10,6 +10,6 @@ const Planet = (props) => {
             <p>Y: {props.y}</p>
         </div>
     );
-}
+};
 
 export default Planet;

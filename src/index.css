@@ -36,6 +36,7 @@ input#menu-toggle {
   display: none;
 }
 
+/* This set of rules animates the hamburger to change into an X when clicked */
 input#menu-toggle:checked ~ .hamburger span {
   transform: translateX(0.2rem);
 }
@@ -82,12 +83,13 @@ input#menu-toggle:checked ~ .navigation {
   background: linear-gradient(45deg, var(--main-color), var(--accent-color));
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  min-height: 100%;
   justify-content: space-around;
   left: 0;
   opacity: 90%;
   position: absolute;
   top: 0;
+  bottom: 0;
   transform: translateX(calc(-1 * var(--navigation-width)));
   transition: transform var(--navigation-animation-time) ease-in-out;
   width: var(--navigation-width);
