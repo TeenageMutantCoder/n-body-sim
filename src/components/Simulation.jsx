@@ -31,13 +31,16 @@ const Simulation = (props) => {
     let cameraSpeed = defaults.cameraSpeed;
     let shouldInvertCamera = defaults.shouldInvertCamera;
 
+    // eslint-disable-next-line no-unused-vars
     const [planets, setPlanets] = useState(defaults.planets);
     const canvasRef = useRef(null);
 
+    // eslint-disable-next-line no-unused-vars
     const createPlanet = (name, color, radius, mass, x, y) => {
         setPlanets([...planets, {name: name, color: color, radius: radius, mass: mass, x: x, y: y}]);
     };
 
+    // eslint-disable-next-line no-unused-vars
     const updatePlanets = () => {};
 
     const handleKeyDown = (event, speed, shouldInvert) => {
@@ -132,6 +135,7 @@ const Simulation = (props) => {
         return () => {
             window.cancelAnimationFrame(animationFrameId)
         };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [draw]);
 
     // let box;
