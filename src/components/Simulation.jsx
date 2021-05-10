@@ -1,6 +1,5 @@
 // import { Engine, Scene, FreeCamera, Vector3, HemisphericLight, MeshBuilder } from "@babylonjs/core";
 import React, { useState, useEffect, useRef } from "react";
-import Planet from "./Planet";
 
 const Simulation = (props) => {
     // Units are all in standard SI units (kg, m)
@@ -8,21 +7,37 @@ const Simulation = (props) => {
     // Equatorial radius data used for radius
     // Initial x values represent distance from sun. Taken from https://www.jpl.nasa.gov/edu/pdfs/scaless_reference.pdf
     const defaults = {
-        zoomScale: 1/1000,
+        // gravitationalConstant: 6.674 * 10**(-11),
+        gravitationalConstant: 0.001,
+        // zoomScale: 1/1000,
+        zoomScale: 1,
         shouldInvertCamera: false,
-        cameraSpeed: 100,
+        // cameraSpeed: 100,
+        cameraSpeed: 50,
         zoomScaleStep: 1.1,
         cameraSpeedStep: 100,
+        paused: false,
+        // planets: [
+        //     {name: "Sun", color: null, mass: 19891 * 10**26, radius: 695508, x: 0, y: 0, dx: 0, dy: 0},
+        //     {name: "Mercury", color: null, mass: 330114 * 10**18, radius: 2440.53, x: 57900000, y: 0, dx: 0, dy: 0},
+        //     {name: "Venus", color: null, mass: 486747 * 10**19, radius: 6051.8, x: 108200000, y: 0, dx: 0, dy: 0},
+        //     {name: "Earth", color: null, mass: 597237 * 10**19, radius: 6378.1366, x: 149600000, y: 0, dx: 0, dy: 0},
+        //     {name: "Mars", color: null, mass: 641712 * 10**18, radius: 3396.19, x: 227900000, y: 0, dx: 0, dy: 0},
+        //     {name: "Jupiter", color: null, mass: 1898187 * 10**21, radius: 71492, x: 778600000, y: 0, dx: 0, dy: 0},
+        //     {name: "Saturn", color: null, mass: 5683174 * 10**20, radius: 60268, x: 1433500000, y: 0, dx: 0, dy: 0},
+        //     {name: "Uranus", color: null, mass: 868127 * 10**20, radius: 25559, x: 2872500000, y: 0, dx: 0, dy: 0},
+        //     {name: "Neptune", color: null, mass: 1024126 * 10**20, radius: 24764, x: 4495100000, y: 0, dx: 0, dy: 0}
+        // ]
         planets: [
-            {name: "Sun", color: null, mass: 19891 * 10**26, radius: 695508, x: 0, y: 0},
-            {name: "Mercury", color: null, mass: 330114 * 10**18, radius: 2440.53, x: 57900000, y: 0},
-            {name: "Venus", color: null, mass: 486747 * 10**19, radius: 6051.8, x: 108200000, y: 0},
-            {name: "Earth", color: null, mass: 597237 * 10**19, radius: 6378.1366, x: 149600000, y: 0},
-            {name: "Mars", color: null, mass: 641712 * 10**18, radius: 3396.19, x: 227900000, y: 0},
-            {name: "Jupiter", color: null, mass: 1898187 * 10**21, radius: 71492, x: 778600000, y: 0},
-            {name: "Saturn", color: null, mass: 5683174 * 10**20, radius: 60268, x: 1433500000, y: 0},
-            {name: "Uranus", color: null, mass: 868127 * 10**20, radius: 25559, x: 2872500000, y: 0},
-            {name: "Neptune", color: null, mass: 1024126 * 10**20, radius: 24764, x: 4495100000, y: 0}
+            {name: "Sun", color: "#FFFF00", mass: 1000, radius: 10, x: 0, y: 0, dx: 0, dy: 0},
+            // {name: "Mercury", color: "#FF0000", mass: 100, radius: 10, x: 50, y: 0, dx: 0, dy: 0},
+            // {name: "Venus", color: null, mass: 100, radius: 10, x: 100, y: 0, dx: 0, dy: 0},
+            // {name: "Earth", color: "#00FFFF", mass: 100, radius: 10, x: 150, y: 0, dx: 0, dy: 0},
+            // {name: "Mars", color: null, mass: 100, radius: 10, x: 200, y: 0, dx: 0, dy: 0},
+            // {name: "Jupiter", color: null, mass: 100, radius: 10, x: 250, y: 0, dx: 0, dy: 0},
+            // {name: "Saturn", color: null, mass: 100, radius: 10, x: 300, y: 0, dx: 0, dy: 0},
+            // {name: "Uranus", color: null, mass: 100, radius: 10, x: 350, y: 0, dx: 0, dy: 0},
+            {name: "Neptune", color: null, mass: 1000, radius: 10, x: 200, y: 0, dx: 2, dy: 2}
         ]
     };
     let zoomScale = defaults.zoomScale;
@@ -30,18 +45,71 @@ const Simulation = (props) => {
     let yOffset = 0;
     let cameraSpeed = defaults.cameraSpeed;
     let shouldInvertCamera = defaults.shouldInvertCamera;
+    let paused = defaults.paused;
 
-    // eslint-disable-next-line no-unused-vars
     const [planets, setPlanets] = useState(defaults.planets);
     const canvasRef = useRef(null);
 
     // eslint-disable-next-line no-unused-vars
-    const createPlanet = (name, color, radius, mass, x, y) => {
-        setPlanets([...planets, {name: name, color: color, radius: radius, mass: mass, x: x, y: y}]);
+    const createPlanet = (planet) => {
+        setPlanets([...planets, {name: planet.name, color: planet.color, 
+                                 radius: planet.radius, mass: planet.mass, 
+                                 x: planet.x, y: planet.y, dx: planet.dx, dy: planet.dy}]);
     };
 
-    // eslint-disable-next-line no-unused-vars
-    const updatePlanets = () => {};
+    const getDistance = (objectA, objectB) => {
+        return Math.sqrt((objectB.y - objectA.y) ** 2 + (objectB.x - objectA.x) ** 2);
+    }
+
+    const getGravitationalForce = (objectA, objectB) => {
+        const distance = getDistance(objectA, objectB);
+        if (distance === 0) return 0;
+        return (defaults.gravitationalConstant * objectA.mass * objectB.mass) / (distance ** 2);
+    };
+
+    const getDirection = (fromObject, toObject) => {
+        const distance = getDistance(fromObject, toObject);
+        if (distance === 0) return 0;
+        const distanceX = toObject.x - fromObject.x;
+        return Math.acos(distanceX / distance);
+    };
+
+    const getForceVector = (force, direction) => {
+        const forceX = Math.cos(direction) * force;
+        const forceY = Math.sin(direction) * force;
+        return {x: forceX, y: forceY};
+    }
+
+    const updatePlanets = () => {
+        const star = planets[0];
+        planets.forEach((planet) => {
+            if (planet === star) {
+                console.log("star");
+                return;}
+            const force = getGravitationalForce(star, planet);
+            const direction = getDirection(planet, star);
+            const {x: forceX, y: forceY} = getForceVector(force, direction);
+            planet.dx += forceX;
+            planet.dy += -forceY; // Adding negative forceY because y axis is inverted in computer graphics
+
+            const nextX = planet.x + planet.dx;
+            const nextY = planet.y + planet.dy;
+
+            const canvas = canvasRef.current;
+            const rect = canvas.getBoundingClientRect();
+            if (nextX >= rect.width - rect.width/2 || nextX <= 0 - rect.width/2) {
+                planet.dx = -planet.dx;
+            }
+            if (nextY >= rect.height - rect.height/2 || nextY <= 0 - rect.height/2) {
+                    planet.dy = -planet.dy;
+            }
+            // planet.x += forceX;
+            // planet.y += forceY;
+            planet.x += planet.dx;
+            planet.y += planet.dy;
+        });
+        setPlanets(planets);
+    };
 
     const handleKeyDown = (event, speed, shouldInvert) => {
         speed = shouldInvert ? speed : -speed;
@@ -86,6 +154,10 @@ const Simulation = (props) => {
             case "i":
                 shouldInvertCamera = !shouldInvertCamera;
                 break;
+            // Pause
+            case " ":
+                paused = !paused;
+                break;
             default:
                 return;
         }
@@ -109,6 +181,7 @@ const Simulation = (props) => {
         ctx.fillText("Zoom scale: " + Number.parseFloat(zoomScale).toFixed(6), 5, 75);
         ctx.fillText("Inverted camera: " + shouldInvertCamera, 5, 125);
         ctx.fillText("Camera position: (" + xOffset + " " + yOffset + ")", 5, 175);
+        if (paused) ctx.fillText("Paused", 5, 225);
     };
     
     useEffect(() => {
@@ -129,6 +202,7 @@ const Simulation = (props) => {
 
         const render = () => {
             draw(context, dpr);
+            if (!paused) updatePlanets();
             animationFrameId = window.requestAnimationFrame(render);
         };
         render();
@@ -136,7 +210,7 @@ const Simulation = (props) => {
             window.cancelAnimationFrame(animationFrameId)
         };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [draw]);
+    }, [planets]);
 
     // let box;
 
@@ -191,17 +265,6 @@ const Simulation = (props) => {
     return (
         <div className="Simulation">
             <h1 className="title">Simulation</h1>
-            <div className="planets-info">
-                <h2>Planet Information</h2>
-                <div className="planets">
-                    {planets.map(planet =>
-                        <Planet key={planet.name} name={planet.name} 
-                            mass={planet.mass} radius={planet.radius} 
-                            x={planet.x} y={planet.y} />
-                        )
-                    }
-                </div>
-            </div>
             <canvas ref={canvasRef}></canvas>
         </div>
     );

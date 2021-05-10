@@ -123,12 +123,6 @@ input#menu-toggle:checked ~ .navigation {
   flex-direction: column;
 }
 
-.Simulation .planets{
-  display: flex;
-  justify-content: space-evenly;
-  overflow-x: auto;
-}
-
 .Simulation canvas{
   border: 1px solid white;
   flex: 1;

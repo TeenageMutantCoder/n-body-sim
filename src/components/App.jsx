@@ -32,7 +32,7 @@ const App = () => {
     return (
         <BrowserRouter>
             <input type="checkbox" id="menu-toggle" />
-            <label for="menu-toggle" className="hamburger">
+            <label htmlFor="menu-toggle" className="hamburger">
                 <span></span>
                 <span></span>
                 <span></span>

@@ -13,6 +13,8 @@ const About = () => {
             <p>As said <a href="https://www.britannica.com/science/Keplers-laws-of-planetary-motion" target="_blank" rel="noopener noreferrer">here</a>, Kepler's laws of planetary motion do not "take into account the gravitational interactions (as perturbing effects) of the various planets on each other." This is simply the easiest way to approximate planetary or satellite motion, as Kepler's laws are also useful for approximating "motions of natural and artificial satellites, as well as to stellar systems and extrasolar planets".</p>
             <h2>Credits</h2>
             <p>Obviously, I programmed this myself. However, I did use various sources to learn the math and get inspiration. Here they are:</p>
+            <a href="https://en.wikipedia.org/wiki/Newton%27s_law_of_universal_gravitation#Vector_form">https://en.wikipedia.org/wiki/Newton%27s_law_of_universal_gravitation#Vector_form</a>
+            <a href="https://en.wikipedia.org/wiki/Kepler%27s_laws_of_planetary_motion#Position_as_a_function_of_time">https://en.wikipedia.org/wiki/Kepler%27s_laws_of_planetary_motion#Position_as_a_function_of_time</a>
         </div>
     );
 };
