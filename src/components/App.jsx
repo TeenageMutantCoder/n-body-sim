@@ -1,9 +1,9 @@
 import React from "react";
 import { BrowserRouter, Link, Switch, Route } from "react-router-dom";
 import About from "./About";
-import ContactMe from "./ContactMe";
 import Home from "./Home";
 import Simulation from "./Simulation";
+import "./App.css";
 
 const routes = [
     {
@@ -15,11 +15,6 @@ const routes = [
         path: "/about",
         title: "About",
         content: () => <About />
-    },
-    {
-        path: "/contact-me",
-        title: "Contact Me",
-        content: () => <ContactMe />
     },
     {
         path: "/",

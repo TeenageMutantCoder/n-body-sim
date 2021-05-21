@@ -1,271 +1,219 @@
-// import { Engine, Scene, FreeCamera, Vector3, HemisphericLight, MeshBuilder } from "@babylonjs/core";
-import React, { useState, useEffect, useRef } from "react";
+import * as BABYLON from "@babylonjs/core";
+import SceneComponent from "./SceneComponent";
+import React, { useState, useRef } from "react";
+import "./Simulation.css";
 
 const Simulation = (props) => {
     // Units are all in standard SI units (kg, m)
     // Mass and radius taken from https://solarsystem.nasa.gov/solar-system/sun/by-the-numbers/ and https://ssd.jpl.nasa.gov/?planet_phys_par
     // Equatorial radius data used for radius
+    // Size is double the radius
     // Initial x values represent distance from sun. Taken from https://www.jpl.nasa.gov/edu/pdfs/scaless_reference.pdf
     const defaults = {
-        // gravitationalConstant: 6.674 * 10**(-11),
-        gravitationalConstant: 0.001,
-        // zoomScale: 1/1000,
-        zoomScale: 1,
-        shouldInvertCamera: false,
-        // cameraSpeed: 100,
-        cameraSpeed: 50,
-        zoomScaleStep: 1.1,
-        cameraSpeedStep: 100,
-        paused: false,
-        // planets: [
-        //     {name: "Sun", color: null, mass: 19891 * 10**26, radius: 695508, x: 0, y: 0, dx: 0, dy: 0},
-        //     {name: "Mercury", color: null, mass: 330114 * 10**18, radius: 2440.53, x: 57900000, y: 0, dx: 0, dy: 0},
-        //     {name: "Venus", color: null, mass: 486747 * 10**19, radius: 6051.8, x: 108200000, y: 0, dx: 0, dy: 0},
-        //     {name: "Earth", color: null, mass: 597237 * 10**19, radius: 6378.1366, x: 149600000, y: 0, dx: 0, dy: 0},
-        //     {name: "Mars", color: null, mass: 641712 * 10**18, radius: 3396.19, x: 227900000, y: 0, dx: 0, dy: 0},
-        //     {name: "Jupiter", color: null, mass: 1898187 * 10**21, radius: 71492, x: 778600000, y: 0, dx: 0, dy: 0},
-        //     {name: "Saturn", color: null, mass: 5683174 * 10**20, radius: 60268, x: 1433500000, y: 0, dx: 0, dy: 0},
-        //     {name: "Uranus", color: null, mass: 868127 * 10**20, radius: 25559, x: 2872500000, y: 0, dx: 0, dy: 0},
-        //     {name: "Neptune", color: null, mass: 1024126 * 10**20, radius: 24764, x: 4495100000, y: 0, dx: 0, dy: 0}
+        timestep: 100000,
+        gravitationalConstant: 6.674 * 10**(-11),
+        softeningParameter: 0,
+        // bodiesInfo: [
+        //     {name: "Sun", color: null, mass: 19891 * 10**26, size: 695508, x: 0, y: 0, z: 0, velocityX: 0, velocityY: 0, velocityZ: 0},
+        //     {name: "Mercury", color: null, mass: 330114 * 10**18, size: 2440.53, x: 57900000, y: 0, z: 0, velocityX: 0, velocityY: 0, velocityZ: 0},
+        //     {name: "Venus", color: null, mass: 486747 * 10**19, size: 6051.8, x: 108200000, y: 0, z: 0, velocityX: 0, velocityY: 0, velocityZ: 0},
+        //     {name: "Earth", color: null, mass: 597237 * 10**19, size: 6378.1366, x: 149600000, y: 0, z: 0, velocityX: 0, velocityY: 0, velocityZ: 0},
+        //     {name: "Mars", color: null, mass: 641712 * 10**18, size: 3396.19, x: 227900000, y: 0, z: 0, velocityX: 0, velocityY: 0, velocityZ: 0},
+        //     {name: "Jupiter", color: null, mass: 1898187 * 10**21, size: 71492, x: 778600000, y: 0, z: 0, velocityX: 0, velocityY: 0, velocityZ: 0},
+        //     {name: "Saturn", color: null, mass: 5683174 * 10**20, size: 60268, x: 1433500000, y: 0, z: 0, velocityX: 0, velocityY: 0, velocityZ: 0},
+        //     {name: "Uranus", color: null, mass: 868127 * 10**20, size: 25559, x: 2872500000, y: 0, z: 0, velocityX: 0, velocityY: 0, velocityZ: 0},
+        //     {name: "Neptune", color: null, mass: 1024126 * 10**20, size: 24764, x: 4495100000, y: 0, z: 0, velocityX: 0, velocityY: 0, velocityZ: 0}
         // ]
-        planets: [
-            {name: "Sun", color: "#FFFF00", mass: 1000, radius: 10, x: 0, y: 0, dx: 0, dy: 0},
-            // {name: "Mercury", color: "#FF0000", mass: 100, radius: 10, x: 50, y: 0, dx: 0, dy: 0},
-            // {name: "Venus", color: null, mass: 100, radius: 10, x: 100, y: 0, dx: 0, dy: 0},
-            // {name: "Earth", color: "#00FFFF", mass: 100, radius: 10, x: 150, y: 0, dx: 0, dy: 0},
-            // {name: "Mars", color: null, mass: 100, radius: 10, x: 200, y: 0, dx: 0, dy: 0},
-            // {name: "Jupiter", color: null, mass: 100, radius: 10, x: 250, y: 0, dx: 0, dy: 0},
-            // {name: "Saturn", color: null, mass: 100, radius: 10, x: 300, y: 0, dx: 0, dy: 0},
-            // {name: "Uranus", color: null, mass: 100, radius: 10, x: 350, y: 0, dx: 0, dy: 0},
-            {name: "Neptune", color: null, mass: 1000, radius: 10, x: 200, y: 0, dx: 2, dy: 2}
+        bodiesInfo: [
+            {name: "Sun", color: "#FFFF00", mass: 10000, size: 10, x: 0, y: 0, z: 0, velocityX: 0, velocityY: 0, velocityZ: 0},
+            {name: "Mercury", color: "#FF0000", mass: 100, size: 10, x: 50, y: 0, z: 0, velocityX: 0, velocityY: 0, velocityZ: 0},
+            {name: "Venus", color: null, mass: 100, size: 10, x: 100, y: 0, z: 0, velocityX: 0, velocityY: 0, velocityZ: 0},
+            {name: "Earth", color: "#00FFFF", mass: 100, size: 10, x: 150, y: 0, z: 0, velocityX: 0, velocityY: 0, velocityZ: 0},
+            {name: "Mars", color: null, mass: 100, size: 10, x: 200, y: 0, z: 0, velocityX: 0, velocityY: 0, velocityZ: 0},
+            {name: "Jupiter", color: null, mass: 100, size: 10, x: 250, y: 0, z: 0, velocityX: 0, velocityY: 0, velocityZ: 0},
+            {name: "Saturn", color: null, mass: 100, size: 10, x: 300, y: 0, z: 0, velocityX: 0, velocityY: 0, velocityZ: 0},
+            {name: "Uranus", color: null, mass: 100, size: 10, x: 350, y: 0, z: 0, velocityX: 0, velocityY: 0, velocityZ: 0},
+            {name: "Neptune", color: null, mass: 1000, size: 10, x: 400, y: 0, z: 0, velocityX: 0, velocityY: 0, velocityZ: 0}
         ]
     };
-    let zoomScale = defaults.zoomScale;
-    let xOffset = 0;
-    let yOffset = 0;
-    let cameraSpeed = defaults.cameraSpeed;
-    let shouldInvertCamera = defaults.shouldInvertCamera;
-    let paused = defaults.paused;
+    let { timestep, gravitationalConstant, softeningParameter } = defaults;
+    const [bodiesInfo, setBodiesInfo] = useState(defaults.bodiesInfo);
+    let playButton = useRef();
+    let [simulationRunning, setSimulationRunning] = useState(false);
 
-    const [planets, setPlanets] = useState(defaults.planets);
-    const canvasRef = useRef(null);
-
-    // eslint-disable-next-line no-unused-vars
-    const createPlanet = (planet) => {
-        setPlanets([...planets, {name: planet.name, color: planet.color, 
-                                 radius: planet.radius, mass: planet.mass, 
-                                 x: planet.x, y: planet.y, dx: planet.dx, dy: planet.dy}]);
+    const createBody = (bodyOptions, scene) => {
+        const {name = "Unnamed", x = 0, y = 0, z = 0, size, color, mass, ...rest} = bodyOptions;
+        let body = BABYLON.MeshBuilder.CreateSphere(name, {diameter: size}, scene);
+        body.physicsImpostor = new BABYLON.PhysicsImpostor(body, BABYLON.PhysicsImpostor.SphereImpostor, {mass: mass}, scene);
+        body.position = new BABYLON.Vector3(x, y, z);
+        body.metadata = rest;
     };
 
-    const getDistance = (objectA, objectB) => {
-        return Math.sqrt((objectB.y - objectA.y) ** 2 + (objectB.x - objectA.x) ** 2);
-    }
-
-    const getGravitationalForce = (objectA, objectB) => {
-        const distance = getDistance(objectA, objectB);
-        if (distance === 0) return 0;
-        return (defaults.gravitationalConstant * objectA.mass * objectB.mass) / (distance ** 2);
+    const clearScene = (scene) => {
+        if(!scene.meshes) return;
+        scene.meshes.forEach((mesh) => mesh.dispose());
     };
 
-    const getDirection = (fromObject, toObject) => {
-        const distance = getDistance(fromObject, toObject);
-        if (distance === 0) return 0;
-        const distanceX = toObject.x - fromObject.x;
-        return Math.acos(distanceX / distance);
+    const resetScene = (scene) => {
+        clearScene(scene);
+        defaults.bodiesInfo.forEach((body) => createBody(body, scene));
     };
 
-    const getForceVector = (force, direction) => {
-        const forceX = Math.cos(direction) * force;
-        const forceY = Math.sin(direction) * force;
-        return {x: forceX, y: forceY};
-    }
-
-    const updatePlanets = () => {
-        const star = planets[0];
-        planets.forEach((planet) => {
-            if (planet === star) {
-                console.log("star");
-                return;}
-            const force = getGravitationalForce(star, planet);
-            const direction = getDirection(planet, star);
-            const {x: forceX, y: forceY} = getForceVector(force, direction);
-            planet.dx += forceX;
-            planet.dy += -forceY; // Adding negative forceY because y axis is inverted in computer graphics
-
-            const nextX = planet.x + planet.dx;
-            const nextY = planet.y + planet.dy;
-
-            const canvas = canvasRef.current;
-            const rect = canvas.getBoundingClientRect();
-            if (nextX >= rect.width - rect.width/2 || nextX <= 0 - rect.width/2) {
-                planet.dx = -planet.dx;
-            }
-            if (nextY >= rect.height - rect.height/2 || nextY <= 0 - rect.height/2) {
-                    planet.dy = -planet.dy;
-            }
-            // planet.x += forceX;
-            // planet.y += forceY;
-            planet.x += planet.dx;
-            planet.y += planet.dy;
-        });
-        setPlanets(planets);
-    };
-
-    const handleKeyDown = (event, speed, shouldInvert) => {
-        speed = shouldInvert ? speed : -speed;
-        switch (event.key.toLowerCase()) {
-            // Camera movement controls
-            case "arrowup":
-                yOffset += speed;
-                break;
-            case "arrowdown":
-                yOffset -= speed;
-                break;
-            case "arrowleft":
-                xOffset += speed;
-                break;
-            case "arrowright":
-                xOffset -= speed;
-                break;
-            // Reset
-            case "r":
-                xOffset = 0;
-                yOffset = 0;
-                cameraSpeed = defaults.cameraSpeed;
-                zoomScale = defaults.zoomScale;
-                shouldInvertCamera = defaults.shouldInvertCamera;
-                break;
-            // Zoom controls
-            case "w":
-                zoomScale *= defaults.zoomScaleStep;
-                break;
-            case "s":
-                zoomScale /= defaults.zoomScaleStep;
-                break;
-            // Camera speed controls
-            case "a":
-                if (cameraSpeed === defaults.cameraSpeedStep) break;
-                cameraSpeed -= defaults.cameraSpeedStep;
-                break;
-            case "d":
-                cameraSpeed += defaults.cameraSpeedStep;
-                break;
-            // Camera invert toggle
-            case "i":
-                shouldInvertCamera = !shouldInvertCamera;
-                break;
-            // Pause
-            case " ":
-                paused = !paused;
-                break;
-            default:
-                return;
+    const handlePlay = () => {
+        // If simulation already running (or vice versa), this will pause (or play) simulation and change button text.
+        if (simulationRunning) {
+            playButton.current.innerHTML = "Play";
+        } else {
+            playButton.current.innerHTML = "Pause";
         }
+        setSimulationRunning(!simulationRunning);
     }
 
-    const draw = (ctx) => {
-        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-        // Draw each planet
-        planets.forEach(planet => {
-            ctx.fillStyle = planet.color ? planet.color : '#FFFFFF';
-            ctx.beginPath();
-            ctx.arc(Math.round(planet.x * zoomScale + ctx.canvas.width/2) - xOffset,
-                    Math.round(planet.y * zoomScale + ctx.canvas.height/2) - yOffset, 
-                    Math.round(planet.radius * zoomScale), 0, 2*Math.PI);
-            ctx.fill();
-        });
-        // Draw camera information text
-        ctx.fillStyle = "#FF0000";
-        ctx.font = "2rem sans-serif"
-        ctx.fillText("Camera speed: " + cameraSpeed, 5, 25);
-        ctx.fillText("Zoom scale: " + Number.parseFloat(zoomScale).toFixed(6), 5, 75);
-        ctx.fillText("Inverted camera: " + shouldInvertCamera, 5, 125);
-        ctx.fillText("Camera position: (" + xOffset + " " + yOffset + ")", 5, 175);
-        if (paused) ctx.fillText("Paused", 5, 225);
+    const help = () => {
+
     };
-    
-    useEffect(() => {
-        document.addEventListener("keydown", event => {
-            event.preventDefault();
-            handleKeyDown(event, cameraSpeed, shouldInvertCamera);
+
+    // Perfectly elastic collision for convenience
+    // https://www.khanacademy.org/science/physics/linear-momentum/elastic-and-inelastic-collisions/a/what-are-elastic-and-inelastic-collisions
+    const onCollision = (bodyA, bodyB) => {
+        let velocityFinalA = BABYLON.Vector3.Zero();
+        let velocityFinalB = BABYLON.Vector3.Zero();
+        const massA = bodyA.physicsImpostor.mass;
+        const massB = bodyB.physicsImpostor.mass;
+        const velocityA = bodyA.metadata.velocity;
+        const velocityB = bodyB.metadata.velocity;
+        velocityFinalA = velocityA.scale((massA - massB) / (massA + massB)).add(velocityB.scale(2 * massB / (massA + massB)));
+        velocityFinalB = velocityA.scale(2 * massA / (massA + massB)).add(velocityB.scale((massB - massA) / (massA + massB)));
+        bodyA.metadata.velocity = velocityFinalA;
+        bodyB.metadata.velocity = velocityFinalB;
+    };
+
+    const getAcceleration = (body, bodies) => {
+        let acceleration = BABYLON.Vector3.Zero();
+        for (let i=0; i < bodies.length; i++) {
+            if (body === bodies[i]) continue;
+            const otherBody = bodies[i];
+            const distanceSquared = BABYLON.Vector3.DistanceSquared(body.position, otherBody.position);
+            const unitVector = otherBody.position.subtract(body.position).normalize();
+            acceleration.addInPlace(unitVector.scale(otherBody.physicsImpostor.mass / distanceSquared));
+        }
+        acceleration.scaleInPlace(gravitationalConstant);
+        return acceleration;
+    };
+
+    const updateBodiesInfo = (bodies) => {
+        if (!bodies) return;
+        let infoArray = [];
+        bodies.forEach((body) => {
+            let bodyObject = {};
+            bodyObject.name = body.name;
+            bodyObject.color = body.metadata.color;
+            bodyObject.mass = body.physicsImpostor.mass;
+            bodyObject.x = body.position.x;
+            bodyObject.y = body.position.y;
+            bodyObject.z = body.position.z;
+            bodyObject.velocityX = body.metadata.velocity.x;
+            bodyObject.velocityY = body.metadata.velocity.y;
+            bodyObject.velocityZ = body.metadata.velocity.z;
+            infoArray.push(bodyObject);
         });
+        setBodiesInfo(infoArray);
+    };
 
-        const canvas = canvasRef.current;
-        const dpr = window.devicePixelRatio || 1;
-        const rect = canvas.getBoundingClientRect();
-        canvas.width = rect.width * dpr;
-        canvas.height = rect.height * dpr;
+    const updateBodies = (bodies, scene) => {
+        if (simulationRunning) {
+            const deltaTime = timestep * scene.getEngine().getDeltaTime() / 1000;
+            for (let i = 0; i < bodies.length; i++) {
+                bodies[i].metadata.acceleration = getAcceleration(bodies[i], bodies);
+            }
+            for (let i = 0; i < bodies.length; i++) {
+                const currentBody = bodies[i];
+                const acceleration = currentBody.metadata.acceleration ?? BABYLON.Vector3.Zero();
+                const velocity = currentBody.metadata.velocity ?? BABYLON.Vector3.Zero();
+                // Update position
+                let translationVector = velocity.scale(deltaTime).add(acceleration.scale(deltaTime ** 2 /2));
+                currentBody.position.addInPlace(translationVector);
+                // Update velocity
+                currentBody.metadata.velocity = velocity.add(acceleration.scale(deltaTime));
+            }
+            updateBodiesInfo(bodies);
+        }
+    };
 
-        const context = canvas.getContext("2d")
-        context.scale(dpr, dpr);
-        let animationFrameId;
+    const onSceneReady = (scene) => {
+        let camera = new BABYLON.UniversalCamera("camera", new BABYLON.Vector3(0, 5, -500), scene);
+        camera.setTarget(BABYLON.Vector3.Zero());
+        const canvas = scene.getEngine().getRenderingCanvas();
+        camera.inputs.addMouseWheel();
+        camera.attachControl(canvas, true);
+        let light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0), scene);
+        light.intensity = 0.7;
+        if (bodiesInfo) bodiesInfo.forEach((body) => {createBody(body, scene)});
+};
 
-        const render = () => {
-            draw(context, dpr);
-            if (!paused) updatePlanets();
-            animationFrameId = window.requestAnimationFrame(render);
-        };
-        render();
-        return () => {
-            window.cancelAnimationFrame(animationFrameId)
-        };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [planets]);
-
-    // let box;
-
-    // const onSceneReady = (scene) => {
-    //     var camera = new FreeCamera("camera1", new Vector3(0, 5, -10), scene);
-    //     camera.setTarget(Vector3.Zero());
-    //     const canvas = scene.getEngine().getRenderingCanvas();
-    //     camera.attachControl(canvas, true);
-    //     var light = new HemisphericLight("light", new Vector3(0, 1, 0), scene);
-    //     light.intensity = 0.7;
-    //     box = MeshBuilder.CreateBox("box", { size: 2 }, scene);
-    //     box.position.y = 1;
-    //     MeshBuilder.CreateGround("ground", { width: 6, height: 6 }, scene);
-    //   };
-
-    // const onRender = (scene) => {
-    //     if (box !== undefined) {
-    //       var deltaTimeInMillis = scene.getEngine().getDeltaTime();
-    //       const rpm = 10;
-    //       box.rotation.y += (rpm / 60) * Math.PI * 2 * (deltaTimeInMillis / 1000);
-    //     }
-    //   };
-    
-    // useEffect(() => {
-    //     if (canvas.current) {
-    //       const engine = new Engine(canvas.current);
-    //       const scene = new Scene(engine);
-    //       if (scene.isReady()) {
-    //         onSceneReady(scene);
-    //       } else {
-    //         scene.onReadyObservable.addOnce((scene) => onSceneReady(scene));
-    //       }
-    //       engine.runRenderLoop(() => {
-    //         onRender(scene);
-    //         scene.render();
-    //       });
-    //       const resize = () => {
-    //         scene.getEngine().resize();
-    //       };
-    //       if (window) {
-    //         window.addEventListener("resize", resize);
-    //       }
-    //       return () => {
-    //         scene.getEngine().dispose();
-    //         if (window) {
-    //           window.removeEventListener("resize", resize);
-    //         }
-    //       };
-    //     }
-    //   }, [canvas]);
+    const onRender = (scene) => {
+        updateBodies(scene.meshes, scene);
+      };
 
     return (
         <div className="Simulation">
             <h1 className="title">Simulation</h1>
-            <canvas ref={canvasRef}></canvas>
+            <div className="Simulation__Container">
+                <div className="Simulation__Controls">
+                    <h2>Options</h2>
+                    <div className="Simulation__Controls__General">
+                        <h3>General settings</h3>
+                        <label for="input__timestep">Timestep:</label>
+                        <input name="input__timestep" id="input__timestep" type="text" />
+                        <br />
+                        <label for="input__G">G:</label>
+                        <input name="input__G" id="input__G" type="text" />
+                        <br />
+                        <label for="input__softening">Softening:</label>
+                        <input name="input__softening" id="input__softening" type="text" />
+                    </div>
+                    <div className="Simulation__Controls__Body">
+                        <h3>Body settings</h3>
+                        <label for="input__name">Name:</label>
+                        <input name="input__name" id="input__name" type="text" />
+                        <br />
+                        <label for="input__color">Color:</label>
+                        <input name="input__color" id="input__color" type="color" />
+                        <br />
+                        <label for="input__mass">Mass:</label>
+                        <input name="input__mass" id="input__mass" type="text" />
+                        <br />
+                        <label for="input_size">Size:</label>
+                        <input name="input_size" id="input__size" type="text" />
+                        <br />
+                        <label for="input__position-x">X:</label>
+                        <input name="input__position-x" id="input__position-x" type="text" />
+                        <br />
+                        <label for="input__position-y">Y:</label>
+                        <input name="input__position-y" id="input__position-y" type="text" />
+                        <br />
+                        <label for="input__position-z">Z:</label>
+                        <input name="input__position-z" id="input__position-z" type="text" />
+                        <br />
+                        <label for="input__velocity-x">Velocity X:</label>
+                        <input name="input__velocity-x" id="input__velocity-x" type="text" />
+                        <br />
+                        <label for="input__velocity-y">Velocity Y:</label>
+                        <input name="input__velocity-y" id="input__velocity-y" type="text" />
+                        <br />
+                        <label for="input__velocity-z">Velocity Z:</label>
+                        <input name="input__velocity-z" id="input__velocity-z" type="text" />
+                    </div>
+                    <button onClick={clearScene}>Clear Scene</button>
+                    <br />
+                    <button onClick={resetScene}>Reset Scene</button>
+                    <br />
+                    <button ref={playButton} onClick={handlePlay}>Play</button>
+                    <br />
+                    <button onClick={help}>Help</button>
+                </div>
+                <SceneComponent antialias onSceneReady={onSceneReady} onRender={onRender} id="canvas" />
+            </div>
         </div>
     );
 };

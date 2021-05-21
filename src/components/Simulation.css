@@ -1,0 +1,28 @@
+:root {
+    --border-radius-size: 2rem;
+}
+
+.Simulation {
+    display: flex;
+    flex-direction: column;
+}
+
+.Simulation__Container {
+    display: flex;
+    flex: 1;
+}
+
+.Simulation__Controls {
+    background: linear-gradient(45deg, var(--main-color), var(--accent-color));
+    border-top-left-radius: var(--border-radius-size);
+    border-bottom-left-radius: var(--border-radius-size);
+    flex: 1;
+    padding: 1rem;
+    
+}
+
+.Simulation canvas {
+    flex: 5;
+    border-top-right-radius: var(--border-radius-size);
+    border-bottom-right-radius: var(--border-radius-size);
+}
