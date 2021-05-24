@@ -1,0 +1,32 @@
+.Home__container {
+    display: flex;
+    flex-direction: column;
+    height: 80vh;
+    justify-content: center;
+}
+
+.intro {
+    font-size: 2rem;
+    font-weight: 300;
+    line-height: 3rem;
+    text-align: center;
+}
+
+.button {
+    background: linear-gradient(45deg, var(--main-color), var(--accent-color));
+    border-radius: 2rem;
+    display: block;
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 2rem auto;
+    opacity: 1;
+    padding: 1.5rem;
+    text-align: center;
+    text-decoration: none;
+    transition: opacity 0.2s;
+    width: max-content;
+}
+
+.button:hover {
+    opacity: 0.7;
+}

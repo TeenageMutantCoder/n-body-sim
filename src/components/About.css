@@ -1,0 +1,38 @@
+.About p,
+.About ul {
+    margin-bottom: 1.5rem;
+}
+
+.About p {
+    line-height: 1.75rem;
+}
+
+.About a {
+    color: var(--main-color);
+}
+
+.About a:hover {
+    color: var(--accent-color);
+}
+
+.About li {
+    line-height: 2rem;
+}
+
+li.equation {
+    list-style: none;
+}
+
+span.equation {
+    display: block;
+}
+
+.equation {
+    background-color: rgba(161, 161, 161, 0.24);
+    font-size: 1.5rem;
+    font-weight: 300;
+    text-align: center;
+    margin: 1.5rem auto;
+    padding: 1rem;
+    width: max-content;
+}

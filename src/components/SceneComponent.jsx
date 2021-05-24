@@ -12,6 +12,7 @@ const SceneComponent = (props) => {
       let gravityVector = new Vector3(0, 0, 0);
       let physicsPlugin = new CannonJSPlugin();
       scene.enablePhysics(gravityVector, physicsPlugin);
+      scene.collisionsEnabled = true;
       if (scene.isReady()) {
         props.onSceneReady(scene);
       } else {
