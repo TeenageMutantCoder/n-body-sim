@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import * as BABYLON from "@babylonjs/core";
 import SceneComponent from "./SceneComponent";
 import React, { useState } from "react";
