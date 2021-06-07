@@ -30,11 +30,11 @@ const Simulation = (props) => {
             {name: "Mercury", color: "#FF0000", mass: 1000, size: 10, x: 50, y: 100, z: 50, velocityX: 0.3, velocityY: -0.3, velocityZ: 0},
             {name: "Venus", color: null, mass: 1000, size: 10, x: 100, y: 50, z: 150, velocityX: 0, velocityY: 0, velocityZ: -0.3},
             {name: "Earth", color: "#00FFFF", mass: 1000, size: 10, x: 150, y: 0, z: 100, velocityX: 0, velocityY: 0, velocityZ: -0.3},
-            // {name: "Mars", color: null, mass: 1000, size: 10, x: 200, y: -50, z: 100, velocityX: 0, velocityY: 0.2, velocityZ: -0.1},
-            // {name: "Jupiter", color: null, mass: 1000, size: 10, x: 250, y: -100, z: 100, velocityX: 0, velocityY: 0, velocityZ: 0},
-            // {name: "Saturn", color: null, mass: 1000, size: 10, x: 300, y: 75, z: 100, velocityX: 0, velocityY: 0, velocityZ: 0},
-            // {name: "Uranus", color: null, mass: 1000, size: 10, x: 350, y: -75, z: 100, velocityX: 0, velocityY: 0, velocityZ: 0},
-            // {name: "Neptune", color: null, mass: 1000, size: 10, x: 400, y: 50, z: 100, velocityX: 0, velocityY: 0, velocityZ: 0}
+            {name: "Mars", color: null, mass: 1000, size: 10, x: 200, y: -50, z: 100, velocityX: 0, velocityY: 0.2, velocityZ: -0.1},
+            {name: "Jupiter", color: null, mass: 1000, size: 10, x: 250, y: -100, z: 100, velocityX: 0, velocityY: 0, velocityZ: 0},
+            {name: "Saturn", color: null, mass: 1000, size: 10, x: 300, y: 75, z: 100, velocityX: 0, velocityY: 0, velocityZ: 0},
+            {name: "Uranus", color: null, mass: 1000, size: 10, x: 350, y: -75, z: 100, velocityX: 0, velocityY: 0, velocityZ: 0},
+            {name: "Neptune", color: null, mass: 1000, size: 10, x: 400, y: 50, z: 100, velocityX: 0, velocityY: 0, velocityZ: 0}
         ]
     };
     const [timestep, setTimestep] = useState(defaults.timestep);
@@ -170,6 +170,11 @@ const Simulation = (props) => {
     return (
         <div className="Simulation">
             <h1 className="title">Simulation</h1>
+            <div className="buttons">
+                <button type="button" id="reset-btn" onClick={()=>{setSimulationIsRunning(false); setBodiesInfo(defaults.bodiesInfo)}}>Reset</button>
+                <button type="button" onClick={help}>Help</button>
+                <button type="button" id="start-btn" onClick={startSimulation}>Start Simulation</button>
+            </div>    
             {simulationIsRunning && <SceneComponent antialias onSceneReady={onSceneReady} onRender={onRender} id="canvas" />}
             {/* {!simulationIsRunning && 
             <table className="bodies-info-table">
@@ -295,11 +300,6 @@ const Simulation = (props) => {
                 </tbody>
             </table>
             }
-            <div className="buttons">
-                <button type="button" id="reset-btn" onClick={()=>{setSimulationIsRunning(false); setBodiesInfo(defaults.bodiesInfo)}}>Reset</button>
-                <button type="button" onClick={help}>Help</button>
-                <button type="button" id="start-btn" onClick={startSimulation}>Start Simulation</button>
-            </div>
         </div>
     );
 };

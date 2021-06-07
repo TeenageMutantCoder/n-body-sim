@@ -5,6 +5,7 @@
 .Simulation {
     display: flex;
     flex-direction: column;
+    position: relative;
 }
 
 .Simulation .title {
@@ -15,7 +16,9 @@
 .buttons {
     display: flex;
     justify-content: space-evenly;
-    margin-top: 2rem;
+    position: absolute;
+    top: 5rem;
+    width: 100%;
 }
 
 .Simulation button {
@@ -43,7 +46,10 @@
 .bodies-info-table {
     background: linear-gradient(45deg, var(--main-color), var(--accent-color));
     border-radius: var(--border-radius-size);
+    flex: 1;
     text-align: center;
+    position: relative;
+    top: 7rem;
 }
 
 .bodies-info-table input {
