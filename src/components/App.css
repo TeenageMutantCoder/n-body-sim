@@ -66,6 +66,10 @@ input#menu-toggle:checked~.navigation {
     width: 100%;
 }
 
+.navigation__list hr {
+    width: 90%;
+}
+
 .navigation__item {
     list-style: none;
     width: 100%;
