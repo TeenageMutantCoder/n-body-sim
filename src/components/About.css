@@ -1,6 +1,5 @@
-.About p,
-.About ul {
-    margin-bottom: 1.5rem;
+.About > *:not(h1, h2, h3) {
+    margin-bottom: 3rem;
 }
 
 .About p {
@@ -11,6 +10,10 @@
     color: var(--main-color);
 }
 
+.About ul {
+    margin-left: 2rem;    
+}
+
 .About a:hover {
     color: var(--accent-color);
 }
@@ -19,20 +22,14 @@
     line-height: 2rem;
 }
 
-li.equation {
-    list-style: none;
-}
-
-span.equation {
-    display: block;
-}
-
 .equation {
     background-color: rgba(161, 161, 161, 0.24);
+    display: block;
     font-size: 1.5rem;
     font-weight: 300;
-    text-align: center;
+    list-style: none;
     margin: 1.5rem auto;
     padding: 1rem;
+    text-align: center;
     width: max-content;
 }
