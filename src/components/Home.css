@@ -1,8 +1,7 @@
 .Home__container {
     display: flex;
     flex-direction: column;
-    height: 80vh;
-    justify-content: center;
+    margin-top: 20vh;
 }
 
 .intro {
@@ -16,7 +15,7 @@
     background: linear-gradient(45deg, var(--main-color), var(--accent-color));
     border-radius: 2rem;
     display: block;
-    font-size: 2rem;
+    font-size: 1.5rem;
     font-weight: 700;
     margin: 2rem auto;
     opacity: 1;
@@ -29,4 +28,11 @@
 
 .button:hover {
     opacity: 0.7;
+}
+
+@media (max-width: 767px) {
+    .intro {
+        font-size: 1.5rem;
+        line-height: 3rem;
+    }
 }
