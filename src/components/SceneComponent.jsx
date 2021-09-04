@@ -3,11 +3,24 @@ import React, { useEffect, useRef } from "react";
 
 const SceneComponent = (props) => {
   const reactCanvas = useRef(null);
-  const { antialias, engineOptions, adaptToDeviceRatio, sceneOptions, onRender, onSceneReady, ...rest } = props;
+  const {
+    antialias,
+    engineOptions,
+    adaptToDeviceRatio,
+    sceneOptions,
+    onRender,
+    onSceneReady,
+    ...rest
+  } = props;
 
   useEffect(() => {
     if (reactCanvas.current) {
-      const engine = new Engine(reactCanvas.current, antialias, engineOptions, adaptToDeviceRatio);
+      const engine = new Engine(
+        reactCanvas.current,
+        antialias,
+        engineOptions,
+        adaptToDeviceRatio
+      );
       const scene = new Scene(engine, sceneOptions);
       let gravityVector = new Vector3(0, 0, 0);
       let physicsPlugin = new CannonJSPlugin();
@@ -42,7 +55,7 @@ const SceneComponent = (props) => {
         }
       };
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [reactCanvas]);
 
   return <canvas ref={reactCanvas} {...rest} />;

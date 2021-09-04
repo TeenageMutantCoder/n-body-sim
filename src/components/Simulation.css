@@ -2,29 +2,17 @@
     --border-radius-size: 2rem;
 }
 
-.Simulation {
-    display: flex;
-    flex-direction: column;
-    position: relative;
-}
-
-.Simulation .title {
-    margin-bottom: 0.5rem;
-    margin-top: 1rem;
-}
-
 .buttons {
     display: flex;
     justify-content: space-evenly;
-    position: absolute;
-    top: 5rem;
-    width: 100%;
+    margin-bottom: 2rem;
 }
 
 .Simulation button {
     background-color: var(--accent-color);
     border-radius: 0.5rem;
     cursor: pointer;
+    display: block;
     font-size: 1.2rem;
     opacity: 1;
     padding: 1rem;
@@ -36,33 +24,17 @@
     opacity: 0.7;
 }
 
-/* .bodies-info-table,
 .Simulation canvas {
-    flex: 5;
-    border-top-right-radius: var(--border-radius-size);
-    border-bottom-right-radius: var(--border-radius-size);
-} */
-
-.bodies-info-table {
-    background: linear-gradient(45deg, var(--main-color), var(--accent-color));
-    border-radius: var(--border-radius-size);
-    flex: 1;
-    text-align: center;
-    position: relative;
-    top: 7rem;
+    width: 100%;
 }
 
-.bodies-info-table input {
-    opacity: 0.7;
-}
+@media (max-width: 767px) {
+    .buttons {
+        display: block;
+    }
 
-.table__title {
-    font-size: 1.5rem;
-}
-.bodies-info-table th {
-    font-weight: 900;
-}
-
-.bodies-info-table td {
-    font-weight: 300;
+    .Simulation button {
+        margin-bottom: 0.5rem;
+        width: 100%;
+    }
 }
