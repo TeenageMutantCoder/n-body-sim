@@ -209,8 +209,6 @@ const Simulation = (props) => {
   };
 
   const startSimulation = () => {
-    // addInputToState();
-    console.log(bodiesInfo);
     setSimulationIsRunning(true);
   };
 
@@ -277,12 +275,11 @@ const Simulation = (props) => {
   const onSceneReady = (scene) => {
     let camera = new BABYLON.UniversalCamera(
       "camera",
-      new BABYLON.Vector3(0, 5, -500),
+      new BABYLON.Vector3(0, 5, -200),
       scene
     );
     camera.setTarget(BABYLON.Vector3.Zero());
     const canvas = scene.getEngine().getRenderingCanvas();
-    camera.inputs.addMouseWheel();
     camera.attachControl(canvas, true);
     let light = new BABYLON.HemisphericLight(
       "light",
