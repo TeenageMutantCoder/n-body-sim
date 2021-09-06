@@ -279,6 +279,7 @@ const Simulation = (props) => {
       scene
     );
     camera.setTarget(BABYLON.Vector3.Zero());
+    camera.speed = 10;
     const canvas = scene.getEngine().getRenderingCanvas();
     camera.attachControl(canvas, true);
     let light = new BABYLON.HemisphericLight(
