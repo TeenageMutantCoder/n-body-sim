@@ -106,7 +106,7 @@ const About = () => {
         the process. Also, in order to fix a problem caused by the "celestial
         bodies" going inside each other, I added perfectly elastic collisions.
         These collisions do not actually exist in real life, but they made my
-        job easier programming the simulationa and getting it to work properly.
+        job easier programming the simulation and getting it to work properly.
         The formula is not important but can be found in one of the links in the
         credits below. This simulation is only an approximation and should not
         be considered to be exactly accurate.
