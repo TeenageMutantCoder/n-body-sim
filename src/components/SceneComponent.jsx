@@ -15,6 +15,14 @@ const SceneComponent = (props) => {
 
   useEffect(() => {
     if (reactCanvas.current) {
+      // Prevents page scrolling using the arrow keys
+      reactCanvas.current.addEventListener("keydown", (e) => {
+        if (
+          ["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(e.key)
+        ) {
+          e.preventDefault();
+        }
+      });
       const engine = new Engine(
         reactCanvas.current,
         antialias,

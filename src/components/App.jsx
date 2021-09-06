@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { BrowserRouter, Link, Switch, Route } from "react-router-dom";
 import About from "./About";
 import Home from "./Home";
@@ -24,21 +24,23 @@ const routes = [
 ];
 
 const App = () => {
-  // Will close navigation menu if user clicks outside of it
-  document.addEventListener("pointerup", (e) => {
-    if (
-      e.target.className === "navigation" ||
-      e.target.className === "hamburger" ||
-      e.target.className === "hamburger__line" ||
-      e.target.className === "navigation__list" ||
-      e.target.className === "navigation__separator"
-    )
-      return;
-    const menuToggle = document.querySelector("input#menu-toggle");
-    if (menuToggle.checked) {
-      menuToggle.checked = false;
-    }
-  });
+  useEffect(() => {
+    // Will close navigation menu if user clicks outside of it
+    document.addEventListener("pointerup", (e) => {
+      if (
+        e.target.className === "navigation" ||
+        e.target.className === "hamburger" ||
+        e.target.className === "hamburger__line" ||
+        e.target.className === "navigation__list" ||
+        e.target.className === "navigation__separator"
+      )
+        return;
+      const menuToggle = document.querySelector("input#menu-toggle");
+      if (menuToggle.checked) {
+        menuToggle.checked = false;
+      }
+    });
+  }, []);
 
   return (
     <BrowserRouter>
